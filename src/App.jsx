@@ -13,7 +13,7 @@ export default function App() {
 
   useEffect(() => {
     async function load() {
-      const today = new Date().toISOString().split('T')[0]
+      const today = new Date().toLocaleDateString('en-CA')
       const { data: puzzleData } = await supabase
         .from('puzzles')
         .select('*')
