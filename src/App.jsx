@@ -180,6 +180,7 @@ export default function App() {
                   <div style={{fontSize:20}}>🏀</div>
                   <div style={{fontSize:11, color: isFound ? 'white' : '#ffaaaa', background:'rgba(0,0,0,0.4)', padding:'2px 6px', borderRadius:20}}>{a.ppg} PPG</div>
                   <div style={{fontSize:10, color: isFound ? 'rgba(255,255,255,0.85)' : '#ff8888', textAlign:'center', padding:'0 4px', lineHeight:1.3}}>{a.players?.name}</div>
+                  <div style={{fontSize:10, color: isFound ? 'rgba(255,255,255,0.5)' : '#ff6666', textAlign:'center'}}>{a.season}</div>
                 </>
               ) : (
                 <>
