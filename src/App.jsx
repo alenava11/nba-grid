@@ -185,7 +185,7 @@ export default function App() {
               ) : (
                 <>
                   <div style={{fontSize:20, opacity:0.25}}>🏀</div>
-                  <div style={{fontSize:11, color:'#aaa'}}>{a[puzzle.display_stat]} {puzzle.display_stat.toUpperCase()}</div>
+                  <div style={{fontSize:11, color:'#aaa'}}>{a[puzzle?.display_stat]} {puzzle?.display_stat?.toUpperCase()}</div>
                 </>
               )}
             </div>
