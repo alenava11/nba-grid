@@ -31,7 +31,6 @@ export default function App() {
         .in('id', puzzleData.answer_ids)
         .order('ppg', { ascending: false })
       
-      // deduplicate by player name, keep best PPG season
       const seen = new Set()
       const unique = []
       for (const a of (answerData || [])) {
@@ -86,7 +85,7 @@ export default function App() {
     }
     const newFound = [...found, match]
     setFound(newFound)
-    showMessage(`✓ ${match.players.name} — ${match.ppg} PPG`, 'success')
+    showMessage(`✓ ${match.players.name} — ${match[puzzle.display_stat]} ${puzzle.display_stat.toUpperCase()}`, 'success')
     if (newFound.length === answers.length) setGameOver(true)
   }
 
@@ -96,7 +95,7 @@ export default function App() {
   }
 
   if (!puzzle) return (
-    <div style={{padding:'2rem', fontFamily:'sans-serif', color:'var(--color-text-primary)'}}>
+    <div style={{padding:'2rem', fontFamily:'sans-serif'}}>
       No puzzle for today yet!
     </div>
   )
@@ -105,15 +104,22 @@ export default function App() {
 
   return (
     <div style={{maxWidth:600, margin:'0 auto', padding:'1rem', fontFamily:'sans-serif'}}>
-      
+
       <div style={{background:'#1a2744', borderRadius:12, padding:'1rem', color:'white', marginBottom:'1rem'}}>
         <div style={{display:'flex', gap:'1rem', alignItems:'flex-start'}}>
           <div style={{background:'#e85d04', borderRadius:8, padding:'8px 12px', fontSize:13, flexShrink:0, textAlign:'center', lineHeight:1.4}}>
             🏀<br/>DAILY<br/>GRID
           </div>
-          <p style={{fontSize:15, lineHeight:1.6, borderLeft:'3px solid #e85d04', paddingLeft:12, margin:0}}>
-            {puzzle.prompt}
-          </p>
+          <div style={{borderLeft:'3px solid #e85d04', paddingLeft:12}}>
+            <p style={{fontSize:15, lineHeight:1.6, margin:0}}>
+              {puzzle.prompt}
+            </p>
+            {puzzle.hint_text && (
+              <p style={{fontSize:12, color:'rgba(255,255,255,0.5)', margin:'4px 0 0 0'}}>
+                {puzzle.hint_text}
+              </p>
+            )}
+          </div>
         </div>
         <div style={{display:'flex', gap:'1rem', marginTop:'1rem', alignItems:'center', flexWrap:'wrap'}}>
           <span style={{color:'#e85d04', fontSize:20, fontWeight:500}}>{found.length}</span>
@@ -178,15 +184,23 @@ export default function App() {
               {isRevealed ? (
                 <>
                   <div style={{fontSize:20}}>🏀</div>
-                  <div style={{fontSize:11, color: isFound ? 'white' : '#ffaaaa', background:'rgba(0,0,0,0.4)', padding:'2px 6px', borderRadius:20}}>{a[puzzle.display_stat]} {puzzle.display_stat.toUpperCase()}</div>
-                  <div style={{fontSize:10, color: isFound ? 'rgba(255,255,255,0.85)' : '#ff8888', textAlign:'center', padding:'0 4px', lineHeight:1.3}}>{a.players?.name}</div>
-                  <div style={{fontSize:10, color: isFound ? 'rgba(255,255,255,0.5)' : '#ff6666', textAlign:'center'}}>{a.season}</div>
+                  <div style={{fontSize:11, color: isFound ? 'white' : '#ffaaaa', background:'rgba(0,0,0,0.4)', padding:'2px 6px', borderRadius:20}}>
+                    {a[puzzle.display_stat]} {puzzle.display_stat.toUpperCase()}
+                  </div>
+                  <div style={{fontSize:10, color: isFound ? 'rgba(255,255,255,0.85)' : '#ff8888', textAlign:'center', padding:'0 4px', lineHeight:1.3}}>
+                    {a.players?.name}
+                  </div>
+                  <div style={{fontSize:10, color: isFound ? 'rgba(255,255,255,0.5)' : '#ff6666', textAlign:'center'}}>
+                    {a.season}
+                  </div>
                 </>
               ) : (
                 <>
-                      <div style={{fontSize:20, opacity:0.25}}>🏀</div>
-                      <div style={{fontSize:11, color:'#aaa'}}>{a[puzzle?.display_stat]} {puzzle?.display_stat?.toUpperCase()}</div>
-                      <div style={{fontSize:10, color:'#bbb'}}>{a.season}</div>
+                  <div style={{fontSize:20, opacity:0.25}}>🏀</div>
+                  <div style={{fontSize:11, color:'#aaa'}}>
+                    {a[puzzle?.display_stat]} {puzzle?.display_stat?.toUpperCase()}
+                  </div>
+                  <div style={{fontSize:10, color:'#bbb'}}>{a.season}</div>
                 </>
               )}
             </div>
