@@ -186,6 +186,7 @@ export default function App() {
                   <div style={{fontSize:20}}>🏀</div>
                   <div style={{fontSize:11, color: isFound ? 'white' : '#ffaaaa', background:'rgba(0,0,0,0.4)', padding:'2px 6px', borderRadius:20}}>
                     {a[puzzle.display_stat]} {puzzle.display_stat.toUpperCase()}
+                    {puzzle.secondary_stat && ` · ${a[puzzle.secondary_stat]} ${puzzle.secondary_stat.toUpperCase()}`}
                   </div>
                   <div style={{fontSize:10, color: isFound ? 'rgba(255,255,255,0.85)' : '#ff8888', textAlign:'center', padding:'0 4px', lineHeight:1.3}}>
                     {a.players?.name}
@@ -199,6 +200,7 @@ export default function App() {
                   <div style={{fontSize:20, opacity:0.25}}>🏀</div>
                   <div style={{fontSize:11, color:'#aaa'}}>
                     {a[puzzle?.display_stat]} {puzzle?.display_stat?.toUpperCase()}
+                    {puzzle?.secondary_stat && ` · ${a[puzzle?.secondary_stat]} ${puzzle?.secondary_stat?.toUpperCase()}`}
                   </div>
                   <div style={{fontSize:10, color:'#bbb'}}>{a.season}</div>
                 </>
