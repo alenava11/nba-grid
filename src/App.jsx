@@ -170,16 +170,9 @@ export default function App() {
           </div>
 
           <div style={{display:'flex', flexDirection:'column', gap:12}}>
-            {!gaveUp && found.length < answers.length && (
-              <button onClick={startOvertime} style={{padding:'14px', background:'rgba(255,255,255,0.1)', color:'white', border:'1px solid rgba(255,255,255,0.2)', borderRadius:10, fontSize:15, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8}}>
-                ⏱ Overtime
-              </button>
-            )}
-            {gaveUp && (
-              <button onClick={startOvertime} style={{padding:'14px', background:'rgba(255,255,255,0.1)', color:'white', border:'1px solid rgba(255,255,255,0.2)', borderRadius:10, fontSize:15, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8}}>
-                ⏱ Overtime
-              </button>
-            )}
+            <button onClick={startOvertime} style={{padding:'14px', background:'rgba(255,255,255,0.1)', color:'white', border:'1px solid rgba(255,255,255,0.2)', borderRadius:10, fontSize:15, cursor:'pointer'}}>
+              ⏱ Overtime
+            </button>
             <button onClick={() => {
               setShowEndScreen(false)
               setGaveUp(true)
@@ -202,7 +195,7 @@ export default function App() {
   return (
     <div style={{maxWidth:600, margin:'0 auto', padding:'1rem', fontFamily:'sans-serif'}}>
 
-      <div style={{background:'#1a2744', borderRadius:16, padding:'2rem', color:'white', textAlign:'center', minHeight:'80vh', display:'flex', flexDirection:'column', justifyContent:'center'}}>
+      <div style={{background:'#1a2744', borderRadius:16, padding:'2rem', color:'white', textAlign:'center'}}>
         <div style={{display:'flex', gap:'1rem', alignItems:'flex-start'}}>
           <div style={{background:'#e85d04', borderRadius:8, padding:'8px 12px', fontSize:13, flexShrink:0, textAlign:'center', lineHeight:1.4}}>
             🏀<br/>DAILY<br/>GRID
