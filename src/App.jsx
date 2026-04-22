@@ -30,7 +30,7 @@ export default function App() {
         .from('player_seasons')
         .select('*, players(name)')
         .in('id', puzzleData.answer_ids)
-        .order('ppg', { ascending: false })
+        .order(puzzleData.display_stat || 'ppg', { ascending: false })
 
       const seen = new Set()
       const unique = []
