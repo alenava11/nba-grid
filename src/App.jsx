@@ -139,54 +139,96 @@ export default function App() {
   )
 
   const pct = answers.length ? Math.round(found.length / answers.length * 100) : 0
-  const allFoundIds = new Set([...found.map(f => f.id), ...overtimeFound.map(f => f.id)])
 
   if (showEndScreen) {
     return (
-      <div style={{maxWidth:600, margin:'0 auto', padding:'1rem', fontFamily:'sans-serif', minHeight:'100vh', display:'flex', flexDirection:'column', justifyContent:'center'}}>
-        <div style={{background:'#1a2744', borderRadius:16, padding:'2rem', color:'white', textAlign:'center'}}>
-          
-          <div style={{fontSize:14, color:'rgba(255,255,255,0.6)', marginBottom:'0.5rem', textTransform:'uppercase', letterSpacing:'1px'}}>
+      <div style={{
+        minHeight:'100vh',
+        background:'#1a2744',
+        fontFamily:'sans-serif',
+        display:'flex',
+        flexDirection:'column',
+        justifyContent:'center',
+        alignItems:'center',
+        padding:'2rem',
+        boxSizing:'border-box'
+      }}>
+        <div style={{width:'100%', maxWidth:500, textAlign:'center', color:'white'}}>
+
+          <div style={{fontSize:13, color:'rgba(255,255,255,0.5)', marginBottom:'1rem', textTransform:'uppercase', letterSpacing:'2px'}}>
             Your Score
           </div>
-          
-          <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'2rem', margin:'1.5rem 0'}}>
+
+          <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'2.5rem', margin:'2rem 0'}}>
             <div>
-              <div style={{fontSize:48, fontWeight:500, color:'white'}}>{found.length}</div>
-              <div style={{fontSize:16, color:'rgba(255,255,255,0.5)'}}>/ {answers.length}</div>
+              <div style={{fontSize:64, fontWeight:500, color:'white', lineHeight:1}}>{found.length}</div>
+              <div style={{fontSize:18, color:'rgba(255,255,255,0.4)', marginTop:4}}>/ {answers.length}</div>
             </div>
-            <div style={{width:80, height:80, borderRadius:'50%', border:'4px solid #e85d04', display:'flex', alignItems:'center', justifyContent:'center'}}>
-              <span style={{fontSize:20, fontWeight:500, color:'#e85d04'}}>{pct}%</span>
+            <div style={{width:100, height:100, borderRadius:'50%', border:'5px solid #e85d04', display:'flex', alignItems:'center', justifyContent:'center'}}>
+              <span style={{fontSize:24, fontWeight:500, color:'#e85d04'}}>{pct}%</span>
             </div>
           </div>
 
-          <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'8px', marginBottom:'2rem'}}>
-            <span style={{fontSize:14, color:'rgba(255,255,255,0.5)'}}>Strikes:</span>
-            <div style={{display:'flex', gap:4}}>
+          <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'8px', marginBottom:'3rem'}}>
+            <span style={{fontSize:14, color:'rgba(255,255,255,0.4)'}}>Strikes:</span>
+            <div style={{display:'flex', gap:6}}>
               {Array.from({length: strikes}).map((_,i) => (
-                <div key={i} style={{width:20, height:20, borderRadius:'50%', background:'#e24b4a', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12}}>✕</div>
+                <div key={i} style={{width:24, height:24, borderRadius:'50%', background:'#e24b4a', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, color:'white'}}>✕</div>
               ))}
             </div>
           </div>
 
-          <div style={{display:'flex', flexDirection:'column', gap:12}}>
-            <button onClick={startOvertime} style={{padding:'14px', background:'rgba(255,255,255,0.1)', color:'white', border:'1px solid rgba(255,255,255,0.2)', borderRadius:10, fontSize:15, cursor:'pointer'}}>
+          <div style={{display:'flex', flexDirection:'column', gap:14, width:'100%'}}>
+            <button onClick={startOvertime} style={{
+              padding:'20px',
+              background:'rgba(255,255,255,0.08)',
+              color:'white',
+              border:'1px solid rgba(255,255,255,0.2)',
+              borderRadius:14,
+              fontSize:17,
+              cursor:'pointer',
+              width:'100%'
+            }}>
               ⏱ Overtime
             </button>
             <button onClick={() => {
               setShowEndScreen(false)
               setGaveUp(true)
-            }} style={{padding:'14px', background:'#e85d04', color:'white', border:'none', borderRadius:10, fontSize:15, cursor:'pointer'}}>
+            }} style={{
+              padding:'20px',
+              background:'#e85d04',
+              color:'white',
+              border:'none',
+              borderRadius:14,
+              fontSize:17,
+              cursor:'pointer',
+              width:'100%'
+            }}>
               Reveal Answers
             </button>
             <button onClick={() => {
               const text = `🏀 NBA Daily Grid\nFound ${found.length}/${answers.length} (${pct}%)\n${puzzle.prompt}\n\nPlay at balluptop.vercel.app`
               navigator.clipboard.writeText(text)
               showMessage('Copied to clipboard!', 'info')
-            }} style={{padding:'14px', background:'transparent', color:'rgba(255,255,255,0.7)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:10, fontSize:15, cursor:'pointer'}}>
+            }} style={{
+              padding:'20px',
+              background:'transparent',
+              color:'rgba(255,255,255,0.6)',
+              border:'1px solid rgba(255,255,255,0.2)',
+              borderRadius:14,
+              fontSize:17,
+              cursor:'pointer',
+              width:'100%'
+            }}>
               Share Results
             </button>
           </div>
+
+          {message && (
+            <div style={{marginTop:'1rem', padding:'10px', borderRadius:8, fontSize:14, background:'#d4edda', color:'#155724'}}>
+              {message}
+            </div>
+          )}
         </div>
       </div>
     )
@@ -195,7 +237,7 @@ export default function App() {
   return (
     <div style={{maxWidth:600, margin:'0 auto', padding:'1rem', fontFamily:'sans-serif'}}>
 
-      <div style={{background:'#1a2744', borderRadius:16, padding:'3rem 2rem', color:'white', textAlign:'center', width:'100%'}}>
+      <div style={{background:'#1a2744', borderRadius:12, padding:'1rem', color:'white', marginBottom:'1rem'}}>
         <div style={{display:'flex', gap:'1rem', alignItems:'flex-start'}}>
           <div style={{background:'#e85d04', borderRadius:8, padding:'8px 12px', fontSize:13, flexShrink:0, textAlign:'center', lineHeight:1.4}}>
             🏀<br/>DAILY<br/>GRID
