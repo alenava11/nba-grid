@@ -143,7 +143,7 @@ export default function App() {
 
   if (showEndScreen) {
     return (
-      <div style={{maxWidth:600, margin:'0 auto', padding:'1rem', fontFamily:'sans-serif'}}>
+      <div style={{maxWidth:600, margin:'0 auto', padding:'1rem', fontFamily:'sans-serif', minHeight:'100vh', display:'flex', flexDirection:'column', justifyContent:'center'}}>
         <div style={{background:'#1a2744', borderRadius:16, padding:'2rem', color:'white', textAlign:'center'}}>
           
           <div style={{fontSize:14, color:'rgba(255,255,255,0.6)', marginBottom:'0.5rem', textTransform:'uppercase', letterSpacing:'1px'}}>
