@@ -195,7 +195,7 @@ export default function App() {
   return (
     <div style={{maxWidth:600, margin:'0 auto', padding:'1rem', fontFamily:'sans-serif'}}>
 
-      <div style={{background:'#1a2744', borderRadius:16, padding:'2rem', color:'white', textAlign:'center'}}>
+      <div style={{background:'#1a2744', borderRadius:16, padding:'3rem 2rem', color:'white', textAlign:'center', width:'100%'}}>
         <div style={{display:'flex', gap:'1rem', alignItems:'flex-start'}}>
           <div style={{background:'#e85d04', borderRadius:8, padding:'8px 12px', fontSize:13, flexShrink:0, textAlign:'center', lineHeight:1.4}}>
             🏀<br/>DAILY<br/>GRID
