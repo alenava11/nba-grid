@@ -187,9 +187,9 @@ export default function App() {
               Reveal Answers
             </button>
             <button onClick={() => {
-              const text = `🏀 NBA Daily Grid\nFound ${found.length}/${answers.length} (${pct}%)\n${puzzle.prompt}`
+              const text = `🏀 NBA Daily Grid\nFound ${found.length}/${answers.length} (${pct}%)\n${puzzle.prompt}\n\nPlay at balluptop.vercel.app`
               navigator.clipboard.writeText(text)
-              showMessage('Copied!', 'info')
+              showMessage('Copied to clipboard!', 'info')
             }} style={{padding:'14px', background:'transparent', color:'rgba(255,255,255,0.7)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:10, fontSize:15, cursor:'pointer'}}>
               Share Results
             </button>
@@ -202,7 +202,7 @@ export default function App() {
   return (
     <div style={{maxWidth:600, margin:'0 auto', padding:'1rem', fontFamily:'sans-serif'}}>
 
-      <div style={{background:'#1a2744', borderRadius:12, padding:'1rem', color:'white', marginBottom:'1rem'}}>
+      <div style={{background:'#1a2744', borderRadius:16, padding:'2rem', color:'white', textAlign:'center', minHeight:'80vh', display:'flex', flexDirection:'column', justifyContent:'center'}}>
         <div style={{display:'flex', gap:'1rem', alignItems:'flex-start'}}>
           <div style={{background:'#e85d04', borderRadius:8, padding:'8px 12px', fontSize:13, flexShrink:0, textAlign:'center', lineHeight:1.4}}>
             🏀<br/>DAILY<br/>GRID
