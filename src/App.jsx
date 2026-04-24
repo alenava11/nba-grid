@@ -29,22 +29,31 @@ export default function App() {
       if (!puzzleData) return
       setPuzzle(puzzleData)
 
-      const { data: answerData } = await supabase
-        .from('player_seasons')
-        .select('*, players(name)')
-        .in('id', puzzleData.answer_ids)
-        .order(puzzleData.display_stat || 'ppg', { ascending: false })
+      if (puzzleData.puzzle_type === 'career') {
+        const { data: answerData } = await supabase
+          .from('career_totals')
+          .select('*, players(name)')
+          .in('player_id', puzzleData.answer_ids)
+          .order(puzzleData.display_stat || 'total_points', { ascending: false })
+        setAnswers(answerData || [])
+      } else {
+        const { data: answerData } = await supabase
+          .from('player_seasons')
+          .select('*, players(name)')
+          .in('id', puzzleData.answer_ids)
+          .order(puzzleData.display_stat || 'ppg', { ascending: false })
 
-      const seen = new Set()
-      const unique = []
-      for (const a of (answerData || [])) {
-        const name = a.players?.name
-        if (!seen.has(name)) {
-          seen.add(name)
-          unique.push(a)
+        const seen = new Set()
+        const unique = []
+        for (const a of (answerData || [])) {
+          const name = a.players?.name
+          if (!seen.has(name)) {
+            seen.add(name)
+            unique.push(a)
+          }
         }
+        setAnswers(unique)
       }
-      setAnswers(unique)
       setMaxStrikes(puzzleData.max_strikes || 9)
 
       const { data: teamsData } = await supabase
@@ -330,7 +339,7 @@ export default function App() {
                     {a.players?.name}
                   </div>
                   <div style={{fontSize:10, color: isFound ? 'rgba(255,255,255,0.5)' : '#ff6666', textAlign:'center'}}>
-                    {a.season}
+                    {a.season || `${a.seasons_played} seasons`}
                   </div>
                   {puzzle.show_team_hint && teamInfo && (
                     <div style={{fontSize:10, color: isFound ? 'rgba(255,255,255,0.4)' : '#ff4444', textAlign:'center', padding:'0 4px'}}>
