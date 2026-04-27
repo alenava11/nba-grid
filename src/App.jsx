@@ -17,6 +17,7 @@ export default function App() {
   const [overtime, setOvertime] = useState(false)
   const [overtimeFound, setOvertimeFound] = useState([])
   const [showEndScreen, setShowEndScreen] = useState(false)
+  const [isCareer, setIsCareer] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -29,13 +30,17 @@ export default function App() {
       if (!puzzleData) return
       setPuzzle(puzzleData)
 
-      if (puzzleData.puzzle_type === 'career') {
+      const career = puzzleData.puzzle_type === 'career'
+      setIsCareer(career)
+
+      if (career) {
         const { data: answerData } = await supabase
           .from('career_totals')
           .select('*, players(name)')
           .in('player_id', puzzleData.answer_ids)
           .order(puzzleData.display_stat || 'total_points', { ascending: false })
-        setAnswers(answerData || [])
+        const normalized = (answerData || []).map(a => ({...a, _key: a.player_id}))
+        setAnswers(normalized)
       } else {
         const { data: answerData } = await supabase
           .from('player_seasons')
@@ -49,7 +54,7 @@ export default function App() {
           const name = a.players?.name
           if (!seen.has(name)) {
             seen.add(name)
-            unique.push(a)
+            unique.push({...a, _key: a.id})
           }
         }
         setAnswers(unique)
@@ -85,6 +90,24 @@ export default function App() {
     setTimeout(() => setMessage(''), 2500)
   }
 
+  function formatStat(statKey, value) {
+    const labels = {
+      'ppg': `${value} PPG`,
+      'rpg': `${value} RPG`,
+      'apg': `${value} APG`,
+      'spg': `${value} SPG`,
+      'bpg': `${value} BPG`,
+      'fg_pct': `${value}% FG`,
+      'three_pct': `${value}% 3PT`,
+      'total_points': `${value} PTS`,
+      'total_rebounds': `${value} REB`,
+      'total_assists': `${value} AST`,
+      'total_steals': `${value} STL`,
+      'total_blocks': `${value} BLK`,
+    }
+    return labels[statKey] || `${value} ${statKey}`
+  }
+
   function submitGuess(name) {
     setGuess('')
     setSuggestions([])
@@ -107,7 +130,7 @@ export default function App() {
       return
     }
 
-    if (allFound.find(f => f.id === match.id)) {
+    if (allFound.find(f => f._key === match._key)) {
       showMessage(`Already found ${name}!`, 'info')
       return
     }
@@ -122,7 +145,7 @@ export default function App() {
     } else {
       const newFound = [...found, match]
       setFound(newFound)
-      showMessage(`✓ ${match.players.name} — ${match[puzzle.display_stat]} ${puzzle.display_stat.toUpperCase()}`, 'success')
+      showMessage(`✓ ${match.players.name} — ${formatStat(puzzle.display_stat, match[puzzle.display_stat])}`, 'success')
       if (newFound.length === answers.length) {
         setGameOver(true)
         setShowEndScreen(true)
@@ -317,8 +340,8 @@ export default function App() {
 
       <div style={{display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8}}>
         {answers.map((a, i) => {
-          const isFound = found.find(f => f.id === a.id)
-          const isOTFound = overtimeFound.find(f => f.id === a.id)
+          const isFound = found.find(f => f._key === a._key)
+          const isOTFound = overtimeFound.find(f => f._key === a._key)
           const isRevealed = isFound || isOTFound || gaveUp
           const teamInfo = teams[a.team]
           return (
@@ -332,8 +355,8 @@ export default function App() {
                 <>
                   <div style={{fontSize:20}}>🏀</div>
                   <div style={{fontSize:11, color: isFound ? 'white' : isOTFound ? '#e85d04' : '#ffaaaa', background:'rgba(0,0,0,0.4)', padding:'2px 6px', borderRadius:20, textAlign:'center'}}>
-                    {a[puzzle.display_stat]} {puzzle.display_stat.toUpperCase()}
-                    {puzzle.secondary_stat && ` · ${a[puzzle.secondary_stat]} ${puzzle.secondary_stat.toUpperCase()}`}
+                    {formatStat(puzzle.display_stat, a[puzzle.display_stat])}
+                    {puzzle.secondary_stat && ` · ${formatStat(puzzle.secondary_stat, a[puzzle.secondary_stat])}`}
                   </div>
                   <div style={{fontSize:10, color: isFound ? 'rgba(255,255,255,0.85)' : isOTFound ? '#e85d04' : '#ff8888', textAlign:'center', padding:'0 4px', lineHeight:1.3}}>
                     {a.players?.name}
@@ -351,8 +374,8 @@ export default function App() {
                 <>
                   <div style={{fontSize:20, opacity:0.25}}>🏀</div>
                   <div style={{fontSize:11, color:'#aaa', textAlign:'center'}}>
-                    {a[puzzle?.display_stat]} {puzzle?.display_stat?.toUpperCase()}
-                    {puzzle?.secondary_stat && ` · ${a[puzzle?.secondary_stat]} ${puzzle?.secondary_stat?.toUpperCase()}`}
+                    {formatStat(puzzle?.display_stat, a[puzzle?.display_stat])}
+                    {puzzle?.secondary_stat && ` · ${formatStat(puzzle?.secondary_stat, a[puzzle?.secondary_stat])}`}
                   </div>
                   <div style={{fontSize:10, color:'#bbb', textAlign:'center'}}>
                     {a.season}
