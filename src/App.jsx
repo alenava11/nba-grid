@@ -343,7 +343,7 @@ export default function App() {
           const isFound = found.find(f => f._key === a._key)
           const isOTFound = overtimeFound.find(f => f._key === a._key)
           const isRevealed = isFound || isOTFound || gaveUp
-          const teamInfo = teams[a.team]
+          const teamInfo = teams[a.team || a.best_team]
           return (
             <div key={i} style={{
               aspectRatio:'1', borderRadius:8,
