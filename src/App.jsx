@@ -379,7 +379,7 @@ export default function App() {
                   </div>
                   <div style={{fontSize:10, color:'#bbb', textAlign:'center'}}>
                     {a.season}
-                    {puzzle?.show_team_hint && teamInfo && ` · ${teamInfo.division}`}
+                    {puzzle?.show_team_hint && teamInfo && ` · ${isCareer ? teamInfo.full_name : teamInfo.division}`}
                   </div>
                 </>
               )}
