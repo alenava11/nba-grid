@@ -36,7 +36,7 @@ export default function App() {
       if (career) {
         const { data: answerData } = await supabase
           .from('career_totals')
-          .select('*, players(name)')
+          .select('*, players(name), best_stl_season, best_stl_team, best_blk_season, best_blk_team, best_pts_season, best_pts_team, best_ast_season, best_ast_team, best_reb_season, best_reb_team')
           .in('player_id', puzzleData.answer_ids)
           .order(puzzleData.display_stat || 'total_points', { ascending: false })
         const normalized = (answerData || []).map(a => ({...a, _key: a.player_id}))
@@ -106,6 +106,28 @@ export default function App() {
       'total_blocks': `${value} BLK`,
     }
     return labels[statKey] || `${value} ${statKey}`
+  }
+
+  function getCareerSeason(a, stat) {
+    const map = {
+      'total_steals': a.best_stl_season,
+      'total_blocks': a.best_blk_season,
+      'total_points': a.best_pts_season,
+      'total_assists': a.best_ast_season,
+      'total_rebounds': a.best_reb_season,
+    }
+    return map[stat] || `${a.seasons_played} seasons`
+  }
+
+  function getCareerTeamInfo(a, stat) {
+    const map = {
+      'total_steals': a.best_stl_team,
+      'total_blocks': a.best_blk_team,
+      'total_points': a.best_pts_team,
+      'total_assists': a.best_ast_team,
+      'total_rebounds': a.best_reb_team,
+    }
+    return teams[map[stat]]
   }
 
   function submitGuess(name) {
@@ -186,11 +208,9 @@ export default function App() {
         boxSizing:'border-box'
       }}>
         <div style={{width:'100%', maxWidth:500, textAlign:'center', color:'white'}}>
-
           <div style={{fontSize:13, color:'rgba(255,255,255,0.5)', marginBottom:'1rem', textTransform:'uppercase', letterSpacing:'2px'}}>
             Your Score
           </div>
-
           <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'2.5rem', margin:'2rem 0'}}>
             <div>
               <div style={{fontSize:64, fontWeight:500, color:'white', lineHeight:1}}>{found.length}</div>
@@ -200,7 +220,6 @@ export default function App() {
               <span style={{fontSize:24, fontWeight:500, color:'#e85d04'}}>{pct}%</span>
             </div>
           </div>
-
           <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'8px', marginBottom:'3rem'}}>
             <span style={{fontSize:14, color:'rgba(255,255,255,0.4)'}}>Strikes:</span>
             <div style={{display:'flex', gap:6}}>
@@ -209,53 +228,21 @@ export default function App() {
               ))}
             </div>
           </div>
-
           <div style={{display:'flex', flexDirection:'column', gap:14, width:'100%'}}>
-            <button onClick={startOvertime} style={{
-              padding:'20px',
-              background:'rgba(255,255,255,0.08)',
-              color:'white',
-              border:'1px solid rgba(255,255,255,0.2)',
-              borderRadius:14,
-              fontSize:17,
-              cursor:'pointer',
-              width:'100%'
-            }}>
+            <button onClick={startOvertime} style={{padding:'20px', background:'rgba(255,255,255,0.08)', color:'white', border:'1px solid rgba(255,255,255,0.2)', borderRadius:14, fontSize:17, cursor:'pointer', width:'100%'}}>
               ⏱ Overtime
             </button>
-            <button onClick={() => {
-              setShowEndScreen(false)
-              setGaveUp(true)
-            }} style={{
-              padding:'20px',
-              background:'#e85d04',
-              color:'white',
-              border:'none',
-              borderRadius:14,
-              fontSize:17,
-              cursor:'pointer',
-              width:'100%'
-            }}>
+            <button onClick={() => { setShowEndScreen(false); setGaveUp(true) }} style={{padding:'20px', background:'#e85d04', color:'white', border:'none', borderRadius:14, fontSize:17, cursor:'pointer', width:'100%'}}>
               Reveal Answers
             </button>
             <button onClick={() => {
               const text = `🏀 NBA Daily Grid\nFound ${found.length}/${answers.length} (${pct}%)\n${puzzle.prompt}\n\nPlay at balluptop.vercel.app`
               navigator.clipboard.writeText(text)
               showMessage('Copied to clipboard!', 'info')
-            }} style={{
-              padding:'20px',
-              background:'transparent',
-              color:'rgba(255,255,255,0.6)',
-              border:'1px solid rgba(255,255,255,0.2)',
-              borderRadius:14,
-              fontSize:17,
-              cursor:'pointer',
-              width:'100%'
-            }}>
+            }} style={{padding:'20px', background:'transparent', color:'rgba(255,255,255,0.6)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:14, fontSize:17, cursor:'pointer', width:'100%'}}>
               Share Results
             </button>
           </div>
-
           {message && (
             <div style={{marginTop:'1rem', padding:'10px', borderRadius:8, fontSize:14, background:'#d4edda', color:'#155724'}}>
               {message}
@@ -268,20 +255,15 @@ export default function App() {
 
   return (
     <div style={{maxWidth:600, margin:'0 auto', padding:'1rem', fontFamily:'sans-serif'}}>
-
       <div style={{background:'#1a2744', borderRadius:12, padding:'1rem', color:'white', marginBottom:'1rem'}}>
         <div style={{display:'flex', gap:'1rem', alignItems:'flex-start'}}>
           <div style={{background:'#e85d04', borderRadius:8, padding:'8px 12px', fontSize:13, flexShrink:0, textAlign:'center', lineHeight:1.4}}>
             🏀<br/>DAILY<br/>GRID
           </div>
           <div style={{borderLeft:'3px solid #e85d04', paddingLeft:12}}>
-            <p style={{fontSize:15, lineHeight:1.6, margin:0}}>
-              {puzzle.prompt}
-            </p>
+            <p style={{fontSize:15, lineHeight:1.6, margin:0}}>{puzzle.prompt}</p>
             {puzzle.hint_text && (
-              <p style={{fontSize:12, color:'rgba(255,255,255,0.5)', margin:'4px 0 0 0'}}>
-                {puzzle.hint_text}
-              </p>
+              <p style={{fontSize:12, color:'rgba(255,255,255,0.5)', margin:'4px 0 0 0'}}>{puzzle.hint_text}</p>
             )}
           </div>
         </div>
@@ -343,7 +325,9 @@ export default function App() {
           const isFound = found.find(f => f._key === a._key)
           const isOTFound = overtimeFound.find(f => f._key === a._key)
           const isRevealed = isFound || isOTFound || gaveUp
-          const teamInfo = teams[a.team || a.best_team]
+          const teamInfo = isCareer ? getCareerTeamInfo(a, puzzle.display_stat) : teams[(a.team || a.best_team) === 'TOT' ? null : (a.team || a.best_team)]
+          const seasonDisplay = isCareer ? getCareerSeason(a, puzzle.display_stat) : a.season
+
           return (
             <div key={i} style={{
               aspectRatio:'1', borderRadius:8,
@@ -362,7 +346,7 @@ export default function App() {
                     {a.players?.name}
                   </div>
                   <div style={{fontSize:10, color: isFound ? 'rgba(255,255,255,0.5)' : '#ff6666', textAlign:'center'}}>
-                    {a.season || `${a.seasons_played} seasons`}
+                    {seasonDisplay}
                   </div>
                   {puzzle.show_team_hint && teamInfo && (
                     <div style={{fontSize:10, color: isFound ? 'rgba(255,255,255,0.4)' : '#ff4444', textAlign:'center', padding:'0 4px'}}>
@@ -378,8 +362,8 @@ export default function App() {
                     {puzzle?.secondary_stat && ` · ${formatStat(puzzle?.secondary_stat, a[puzzle?.secondary_stat])}`}
                   </div>
                   <div style={{fontSize:10, color:'#bbb', textAlign:'center'}}>
-                    {a.season}
-                    {puzzle?.show_team_hint && teamInfo && ` · ${isCareer ? teamInfo.full_name : teamInfo.division}`}
+                    {seasonDisplay}
+                    {puzzle?.show_team_hint && teamInfo && ` · ${(isCareer || puzzle?.show_full_team) ? teamInfo.full_name : teamInfo.division}`}
                   </div>
                 </>
               )}
