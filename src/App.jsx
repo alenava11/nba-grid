@@ -36,7 +36,7 @@ export default function App() {
       if (career) {
         const { data: answerData } = await supabase
           .from('career_totals')
-          .select('*, players(name), best_stl_season, best_stl_team, best_blk_season, best_blk_team, best_pts_season, best_pts_team, best_ast_season, best_ast_team, best_reb_season, best_reb_team')
+          .select('player_id, total_points, total_rebounds, total_assists, total_steals, total_blocks, seasons_played, best_team, best_stl_season, best_stl_team, best_blk_season, best_blk_team, best_pts_season, best_pts_team, best_ast_season, best_ast_team, best_reb_season, best_reb_team, players(name)')
           .in('player_id', puzzleData.answer_ids)
           .order(puzzleData.display_stat || 'total_points', { ascending: false })
         const normalized = (answerData || []).map(a => ({...a, _key: a.player_id}))
@@ -127,7 +127,9 @@ export default function App() {
       'total_assists': a.best_ast_team,
       'total_rebounds': a.best_reb_team,
     }
-    return teams[map[stat]]
+    const abbr = map[stat]
+    if (!abbr || abbr === 'TOT') return null
+    return teams[abbr]
   }
 
   function submitGuess(name) {
@@ -325,7 +327,9 @@ export default function App() {
           const isFound = found.find(f => f._key === a._key)
           const isOTFound = overtimeFound.find(f => f._key === a._key)
           const isRevealed = isFound || isOTFound || gaveUp
-          const teamInfo = isCareer ? getCareerTeamInfo(a, puzzle.display_stat) : teams[(a.team || a.best_team) === 'TOT' ? null : (a.team || a.best_team)]
+          const teamInfo = isCareer
+            ? getCareerTeamInfo(a, puzzle.display_stat)
+            : teams[(a.team === 'TOT' ? null : a.team)]
           const seasonDisplay = isCareer ? getCareerSeason(a, puzzle.display_stat) : a.season
 
           return (
@@ -333,11 +337,19 @@ export default function App() {
               aspectRatio:'1', borderRadius:8,
               border: isFound ? 'none' : isOTFound ? '1px solid #e85d04' : gaveUp ? '1px solid #ffcccc' : '1px solid #ddd',
               background: isFound ? '#1a2744' : isOTFound ? '#2a1a0a' : gaveUp && !isFound && !isOTFound ? '#2a1a1a' : '#f9f9f9',
-              display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:4
+              display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:4, padding:'4px'
             }}>
               {isRevealed ? (
                 <>
-                  <div style={{fontSize:20}}>🏀</div>
+                  {puzzle.show_team_hint && teamInfo?.nba_id ? (
+                    <img
+                      src={`https://cdn.nba.com/logos/nba/${teamInfo.nba_id}/global/L/logo.svg`}
+                      style={{width:36, height:36}}
+                      onError={e => { e.target.style.display='none' }}
+                    />
+                  ) : (
+                    <div style={{fontSize:20}}>🏀</div>
+                  )}
                   <div style={{fontSize:11, color: isFound ? 'white' : isOTFound ? '#e85d04' : '#ffaaaa', background:'rgba(0,0,0,0.4)', padding:'2px 6px', borderRadius:20, textAlign:'center'}}>
                     {formatStat(puzzle.display_stat, a[puzzle.display_stat])}
                     {puzzle.secondary_stat && ` · ${formatStat(puzzle.secondary_stat, a[puzzle.secondary_stat])}`}
@@ -348,22 +360,25 @@ export default function App() {
                   <div style={{fontSize:10, color: isFound ? 'rgba(255,255,255,0.5)' : '#ff6666', textAlign:'center'}}>
                     {seasonDisplay}
                   </div>
-                  {puzzle.show_team_hint && teamInfo && (
-                    <div style={{fontSize:10, color: isFound ? 'rgba(255,255,255,0.4)' : '#ff4444', textAlign:'center', padding:'0 4px'}}>
-                      {teamInfo.full_name}
-                    </div>
-                  )}
                 </>
               ) : (
                 <>
-                  <div style={{fontSize:20, opacity:0.25}}>🏀</div>
+                  {puzzle?.show_team_hint && teamInfo?.nba_id ? (
+                    <img
+                      src={`https://cdn.nba.com/logos/nba/${teamInfo.nba_id}/global/L/logo.svg`}
+                      style={{width:36, height:36, opacity:0.6}}
+                      onError={e => { e.target.style.display='none' }}
+                    />
+                  ) : (
+                    <div style={{fontSize:20, opacity:0.25}}>🏀</div>
+                  )}
                   <div style={{fontSize:11, color:'#aaa', textAlign:'center'}}>
                     {formatStat(puzzle?.display_stat, a[puzzle?.display_stat])}
                     {puzzle?.secondary_stat && ` · ${formatStat(puzzle?.secondary_stat, a[puzzle?.secondary_stat])}`}
                   </div>
                   <div style={{fontSize:10, color:'#bbb', textAlign:'center'}}>
                     {seasonDisplay}
-                    {puzzle?.show_team_hint && teamInfo && ` · ${(isCareer || puzzle?.show_full_team) ? teamInfo.full_name : teamInfo.division}`}
+                    {puzzle?.show_team_hint && teamInfo && !isCareer && ` · ${puzzle?.show_full_team ? teamInfo.full_name : teamInfo.division}`}
                   </div>
                 </>
               )}
