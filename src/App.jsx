@@ -195,6 +195,7 @@ export default function App() {
   )
 
   const pct = answers.length ? Math.round(found.length / answers.length * 100) : 0
+  const showLogo = isCareer || puzzle?.show_full_team
 
   if (showEndScreen) {
     return (
@@ -329,7 +330,7 @@ export default function App() {
           const isRevealed = isFound || isOTFound || gaveUp
           const teamInfo = isCareer
             ? getCareerTeamInfo(a, puzzle.display_stat)
-            : teams[(a.team === 'TOT' ? null : a.team)]
+            : (a.team === 'TOT' ? null : teams[a.team])
           const seasonDisplay = isCareer ? getCareerSeason(a, puzzle.display_stat) : a.season
 
           return (
@@ -341,7 +342,7 @@ export default function App() {
             }}>
               {isRevealed ? (
                 <>
-                  {puzzle.show_team_hint && teamInfo?.nba_id ? (
+                  {puzzle.show_team_hint && teamInfo?.nba_id && showLogo ? (
                     <img
                       src={`https://cdn.nba.com/logos/nba/${teamInfo.nba_id}/global/L/logo.svg`}
                       style={{width:36, height:36}}
@@ -363,7 +364,7 @@ export default function App() {
                 </>
               ) : (
                 <>
-                  {puzzle?.show_team_hint && teamInfo?.nba_id ? (
+                  {puzzle?.show_team_hint && teamInfo?.nba_id && showLogo ? (
                     <img
                       src={`https://cdn.nba.com/logos/nba/${teamInfo.nba_id}/global/L/logo.svg`}
                       style={{width:36, height:36, opacity:0.6}}
@@ -378,7 +379,7 @@ export default function App() {
                   </div>
                   <div style={{fontSize:10, color:'#bbb', textAlign:'center'}}>
                     {seasonDisplay}
-                    {puzzle?.show_team_hint && teamInfo && !isCareer && ` · ${puzzle?.show_full_team ? teamInfo.full_name : teamInfo.division}`}
+                    {puzzle?.show_team_hint && teamInfo && !showLogo && ` · ${teamInfo.division}`}
                   </div>
                 </>
               )}
